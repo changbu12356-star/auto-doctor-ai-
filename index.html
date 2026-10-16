@@ -1,59 +1,295 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Auto Doctor AI</title>
+<meta name="theme-color" content="#061326">
+<title>Auto Doctor AI | ผู้ช่วยวิเคราะห์ปัญหารถยนต์</title>
 <style>
-body{font-family:Arial,sans-serif;background:#eef2f7;margin:0;padding:18px;color:#172033}
-main{max-width:600px;margin:15px auto;background:white;padding:20px;border-radius:15px}
-h1{color:#087e8b}
-label{display:block;margin-top:14px}
-input,select,textarea,button{box-sizing:border-box;width:100%;padding:12px;margin-top:6px;border-radius:8px;border:1px solid #cbd5e1;font-size:16px}
-button{background:#087e8b;color:white;border:0;margin-top:20px}
-#result{white-space:pre-wrap;background:#ecfeff;padding:14px;border-radius:8px;margin-top:18px}
+:root {
+  --bg:#061326; --panel:#10243d; --panel2:#142d4b;
+  --cyan:#16c9ff; --blue:#087cf0; --green:#12c985;
+  --text:#f3f8ff; --muted:#a8bdd5; --border:#244362;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:radial-gradient(ellipse at top,#153a60,var(--bg) 55%);
+  color:var(--text);font-family:Arial,"Noto Sans Thai",sans-serif;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.wrap{max-width:1000px;margin:auto;padding:16px}
+header{display:flex;align-items:center;gap:12px;padding:10px 0 20px}
+.logo{
+  width:66px;height:66px;border:2px solid var(--cyan);border-radius:18px;
+  display:grid;place-items:center;font-size:34px;
+  box-shadow:0 0 18px #00baff55;background:#071c32;
+}
+.brand{font-size:23px;font-weight:900;font-style:italic}
+.brand span{color:var(--cyan)}
+.sub{font-size:12px;color:var(--muted);margin-top:5px}
+.hero,.panel{
+  background:linear-gradient(145deg,#102945,#0a192c);
+  border:1px solid var(--border);border-radius:20px;padding:20px;
+  box-shadow:0 10px 30px #0003;
+}
+.hero{text-align:center;overflow:hidden}
+.car{font-size:65px;margin:6px}
+h1{font-size:28px;margin:8px 0}
+h2{font-size:21px;margin:0 0 14px}
+p{line-height:1.65}
+.muted{color:var(--muted)}
+.pill{
+  display:inline-block;border:1px solid #168bc4;border-radius:30px;
+  padding:6px 12px;color:#70dcff;font-size:12px;margin-bottom:8px;
+}
+.btn{
+  border:0;border-radius:12px;padding:14px 16px;font-weight:bold;
+  background:linear-gradient(100deg,#087cf0,#10bce9);color:white;
+  width:100%;box-shadow:0 5px 18px #078cff33;
+}
+.btn.green{background:linear-gradient(100deg,#08a96d,#15d49b)}
+.btn.secondary{background:#193653;border:1px solid #315777;box-shadow:none}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.feature{background:#102742;border:1px solid var(--border);border-radius:14px;padding:15px}
+.feature .ico{font-size:27px;margin-bottom:8px}
+.feature strong{display:block;margin-bottom:6px}
+.feature small{color:var(--muted);line-height:1.5}
+.section{margin-top:18px}
+.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.nav button{background:#102742;border:1px solid var(--border);color:white;border-radius:12px;padding:12px 4px;font-size:12px}
+.nav span{display:block;font-size:23px;margin-bottom:5px}
+.page{display:none}
+.page.active{display:block}
+label{display:block;font-size:14px;margin:14px 0 6px}
+input,select,textarea{
+  width:100%;padding:12px;border-radius:10px;background:#07192c;
+  color:white;border:1px solid #31516f;outline:none;
+}
+textarea{resize:vertical;min-height:100px}
+input:focus,select:focus,textarea:focus{border-color:var(--cyan)}
+.note{font-size:12px;color:var(--muted)}
+.resultbox{background:#f2f8ff;color:#12243a;border-radius:14px;padding:16px;margin-top:14px}
+.resultbox h3{margin:0 0 8px}
+.resultbox li{margin:9px 0;line-height:1.5}
+.severity{display:inline-block;background:#fff0c2;color:#7d4b00;padding:5px 10px;border-radius:20px;font-size:12px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:24px 8px}
+@media(min-width:700px){
+  .wrap{padding:24px}
+  .hero{padding:36px}
+  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  h1{font-size:36px}
+}
 </style>
 </head>
 <body>
-<main>
-<h1>🔧 Auto Doctor AI</h1>
-<p>ระบบช่วยวิเคราะห์ปัญหารถยนต์เบื้องต้น</p>
-<label>ประเทศ</label>
-<select id="country"><option>ประเทศไทย</option><option>ญี่ปุ่น</option></select>
-<label>ยี่ห้อรถ</label>
-<input id="brand" placeholder="เช่น Toyota, Honda">
-<label>รุ่นรถ</label>
-<input id="model" placeholder="เช่น Yaris, Aqua">
-<label>ปีรถ</label>
-<input id="year" type="number" placeholder="เช่น 2020">
-<label>อาการรถ</label>
-<textarea id="symptom" rows="4" placeholder="เช่น สตาร์ตไม่ติด มีเสียงคลิก"></textarea>
-<label>รหัสเสีย OBD2 (ถ้ามี)</label>
-<input id="code" placeholder="เช่น P0300">
-<button onclick="analyze()">วิเคราะห์ปัญหา</button>
-<div id="result" hidden></div>
-</main>
+<div class="wrap">
+<header>
+  <div class="logo">🚘</div>
+  <div>
+    <div class="brand">Auto Doctor <span>AI</span></div>
+    <div class="sub">ผู้ช่วยวิเคราะห์ปัญหารถยนต์ ไทย 🇹🇭 และญี่ปุ่น 🇯🇵</div>
+  </div>
+</header>
+
+<!-- 1. หน้าแรก -->
+<section id="home" class="page active">
+  <div class="hero">
+    <div class="pill">🚗 ผู้ช่วยดูแลรถยนต์ของคุณ</div>
+    <div class="car">🚘</div>
+    <h1>รถมีปัญหา? <span style="color:var(--cyan)">เราช่วยวิเคราะห์</span></h1>
+    <p class="muted">กรอกอาการรถ เพื่อดูสาเหตุที่เป็นไปได้<br>แนวทางตรวจสอบ และคำแนะนำเบื้องต้น</p>
+    <button class="btn" onclick="showPage('diagnose')">🔍 เริ่มวิเคราะห์ปัญหา</button>
+  </div>
+
+  <div class="grid">
+    <div class="feature"><div class="ico">🔎</div><strong>วิเคราะห์อาการ</strong><small>ใช้ข้อมูลอาการเพื่อแนะนำจุดตรวจสอบ</small></div>
+    <div class="feature"><div class="ico">🧠</div><strong>สาเหตุที่เป็นไปได้</strong><small>จัดลำดับแนวทางตรวจเบื้องต้น</small></div>
+    <div class="feature"><div class="ico">🔧</div><strong>แนวทางแก้ไข</strong><small>ขั้นตอนตรวจสอบและคำเตือนความปลอดภัย</small></div>
+    <div class="feature"><div class="ico">💴</div><strong>ค่าใช้จ่าย</strong><small>เตรียมส่วนประมาณราคาในเวอร์ชันถัดไป</small></div>
+    <div class="feature"><div class="ico">📘</div><strong>คู่มือช่าง</strong><small>รวมความรู้รถยนต์สำหรับผู้เริ่มต้น</small></div>
+    <div class="feature"><div class="ico">🌏</div><strong>ไทยและญี่ปุ่น</strong><small>เลือกประเทศเพื่อระบุบริบทการใช้งาน</small></div>
+  </div>
+
+  <div class="nav">
+    <button onclick="showPage('diagnose')"><span>🚙</span>วิเคราะห์รถ</button>
+    <button onclick="showPage('history')"><span>🕘</span>ประวัติ</button>
+    <button onclick="showPage('guide')"><span>📚</span>ความรู้</button>
+    <button onclick="showPage('diagnose')"><span>⚙️</span>เริ่มใช้งาน</button>
+  </div>
+</section>
+
+<!-- 2. หน้ากรอกอาการรถ -->
+<section id="diagnose" class="page section">
+  <div class="panel">
+    <h2>🔧 กรอกอาการรถยนต์</h2>
+    <p class="muted">กรอกข้อมูลที่ทราบ ไม่จำเป็นต้องกรอกทุกช่อง</p>
+
+    <label for="country">ประเทศที่ใช้งาน</label>
+    <select id="country">
+      <option value="ไทย">🇹🇭 ประเทศไทย</option>
+      <option value="ญี่ปุ่น">🇯🇵 ประเทศญี่ปุ่น</option>
+    </select>
+
+    <label for="brand">ยี่ห้อรถ</label>
+    <select id="brand">
+      <option value="">เลือกยี่ห้อ</option>
+      <option>Toyota</option><option>Honda</option><option>Nissan</option>
+      <option>Mazda</option><option>Mitsubishi</option><option>Isuzu</option>
+      <option>Suzuki</option><option>Subaru</option><option>Daihatsu</option>
+      <option>อื่น ๆ</option>
+    </select>
+
+    <label for="model">รุ่นรถ</label>
+    <input id="model" placeholder="เช่น Corolla Altis, Aqua, Yaris">
+
+    <label for="year">ปีรถ</label>
+    <input id="year" type="number" min="1980" max="2035" placeholder="เช่น 2020">
+
+    <label for="mileage">เลขไมล์ (กิโลเมตร)</label>
+    <input id="mileage" type="number" min="0" placeholder="เช่น 85000">
+
+    <label for="category">ระบบที่มีปัญหา</label>
+    <select id="category">
+      <option value="ทั่วไป">ไม่แน่ใจ / อื่น ๆ</option>
+      <option value="เครื่องยนต์">เครื่องยนต์</option>
+      <option value="สตาร์ต">สตาร์ตไม่ติด</option>
+      <option value="ไฟฟ้า">ระบบไฟฟ้า / แบตเตอรี่</option>
+      <option value="เบรก">ระบบเบรก</option>
+      <option value="ช่วงล่าง">ช่วงล่าง / พวงมาลัย</option>
+      <option value="ความร้อน">เครื่องยนต์ร้อน</option>
+      <option value="เกียร์">ระบบเกียร์</option>
+      <option value="แอร์">ระบบปรับอากาศ</option>
+    </select>
+
+    <label for="symptom">รายละเอียดอาการ *</label>
+    <textarea id="symptom" maxlength="1000" placeholder="เช่น สตาร์ตไม่ติด มีเสียงคลิก ไฟหน้าปัดติด"></textarea>
+
+    <label for="obd">รหัสเสีย OBD2 (ถ้ามี)</label>
+    <input id="obd" placeholder="เช่น P0301 หรือ P0420">
+
+    <button class="btn" onclick="analyze()">🔍 วิเคราะห์ปัญหา</button>
+    <button class="btn secondary" onclick="showPage('home')">กลับหน้าแรก</button>
+    <p class="note">เวอร์ชันนี้ใช้กฎวิเคราะห์พื้นฐานในเว็บ ยังไม่ได้เชื่อม AI ภายนอก</p>
+  </div>
+</section>
+
+<!-- 3. หน้าผลวิเคราะห์ -->
+<section id="results" class="page section">
+  <div class="panel">
+    <h2>📋 ผลวิเคราะห์เบื้องต้น</h2>
+    <div id="resultContent"></div>
+    <button class="btn" onclick="showPage('diagnose')">แก้ไขข้อมูล / วิเคราะห์ใหม่</button>
+    <button class="btn secondary" onclick="showPage('home')">กลับหน้าแรก</button>
+  </div>
+</section>
+
+<section id="history" class="page section">
+  <div class="panel">
+    <h2>🕘 ประวัติการวิเคราะห์</h2>
+    <p class="muted">เวอร์ชันแรกยังไม่บันทึกประวัติถาวร กรุณาจดผลที่จำเป็นไว้</p>
+    <button class="btn secondary" onclick="showPage('home')">กลับหน้าแรก</button>
+  </div>
+</section>
+
+<section id="guide" class="page section">
+  <div class="panel">
+    <h2>📘 ความรู้และความปลอดภัย</h2>
+    <ul>
+      <li>ห้ามเปิดฝาหม้อน้ำขณะเครื่องยนต์ร้อน</li>
+      <li>หากเบรกหรือพวงมาลัยผิดปกติ ห้ามขับต่อ</li>
+      <li>หากไฟแรงดันน้ำมันเครื่องสีแดงติด ให้หยุดรถในที่ปลอดภัยและดับเครื่อง</li>
+      <li>รหัส OBD2 ช่วยชี้แนวทางตรวจสอบ ไม่ได้ยืนยันว่าอะไหล่ชิ้นใดเสีย</li>
+    </ul>
+    <button class="btn secondary" onclick="showPage('home')">กลับหน้าแรก</button>
+  </div>
+</section>
+
+<footer>
+  Auto Doctor AI · ระบบช่วยวิเคราะห์เบื้องต้น<br>
+  ผลลัพธ์ไม่ใช่การยืนยันการวินิจฉัยจากช่างผู้เชี่ยวชาญ
+</footer>
+</div>
+
 <script>
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const page=document.getElementById(id);
+  if(page) page.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
 function analyze(){
-const s=document.getElementById('symptom').value.trim();
-const c=document.getElementById('code').value.trim().toUpperCase();
-const r=document.getElementById('result');
-r.hidden=false;
-if(!s&&!c){r.textContent='กรุณากรอกอาการรถหรือรหัส OBD2 ก่อน';return;}
-let a='ข้อมูลยังไม่เพียงพอ กรุณาระบุอาการเพิ่มเติมและให้ช่างตรวจสอบ';
-if(/สตาร์ตไม่ติด|สตาร์ทไม่ติด|start/i.test(s))
-a='ควรตรวจแบตเตอรี่ ขั้วแบตเตอรี่ ฟิวส์ วงจรสตาร์ต และมอเตอร์สตาร์ต';
-else if(/ร้อน|ความร้อน|overheat/i.test(s))
-a='จอดในที่ปลอดภัยและหยุดเครื่องเมื่อเหมาะสม ห้ามเปิดฝาหม้อน้ำขณะร้อน ให้ช่างตรวจระบบหล่อเย็น';
-else if(/เบรก|brake/i.test(s))
-a='หากเบรกผิดปกติ ห้ามขับต่อ ให้ช่างตรวจระบบเบรก';
-else if(/เสียง|ดัง|noise/i.test(s))
-a='ระบุตำแหน่งเสียงและช่วงเวลาที่เกิด แล้วให้ช่างตรวจชิ้นส่วนที่เกี่ยวข้อง';
-r.textContent='ผลวิเคราะห์เบื้องต้น\nประเทศ: '+document.getElementById('country').value+
-'\nรถ: '+(document.getElementById('brand').value||'ไม่ระบุ')+' '+(document.getElementById('model').value||'')+
-'\nปี: '+(document.getElementById('year').value||'ไม่ระบุ')+
-'\nรหัส OBD2: '+(c||'ไม่มี')+'\n\nคำแนะนำ:\n'+a+
-'\n\nหมายเหตุ: ระบบพื้นฐานนี้ไม่ใช่ AI จริง และไม่สามารถยืนยันสาเหตุเสียได้';
+  const symptom=document.getElementById('symptom').value.trim();
+  const code=document.getElementById('obd').value.trim().toUpperCase();
+  const category=document.getElementById('category').value;
+  const country=document.getElementById('country').value;
+  const brand=document.getElementById('brand').value || 'ไม่ระบุ';
+  const model=document.getElementById('model').value || 'ไม่ระบุ';
+  const year=document.getElementById('year').value || 'ไม่ระบุ';
+  const mileage=document.getElementById('mileage').value || 'ไม่ระบุ';
+
+  if(!symptom && !code){
+    alert('กรุณากรอกอาการรถหรือรหัส OBD2 ก่อนวิเคราะห์');
+    return;
+  }
+
+  let causes=[],steps=[],warning='หากไม่มั่นใจ ควรให้ช่างตรวจสอบรถจริง';
+
+  if(/เบรก|brake/i.test(symptom)||category==='เบรก'){
+    causes=['ระบบเบรกอาจมีความผิดปกติ ต้องตรวจสอบจากรถจริง'];
+    steps=['จอดในที่ปลอดภัย','ตรวจดูไฟเตือนโดยไม่ขับรถต่อ','ให้ช่างตรวจระบบเบรก'];
+    warning='หากเบรกจม เบรกไม่อยู่ หรือมีเสียงผิดปกติ ห้ามขับต่อ ให้ใช้รถยก';
+  } else if(/ร้อน|ความร้อน|overheat/i.test(symptom)||category==='ความร้อน'){
+    causes=['ระบบหล่อเย็นอาจมีปัญหา เช่น น้ำหล่อเย็นรั่ว พัดลมไม่ทำงาน หรือเทอร์โมสตัทผิดปกติ'];
+    steps=['จอดในที่ปลอดภัยและดับเครื่องเมื่อเหมาะสม','รอให้เครื่องเย็น','ให้ช่างตรวจระดับน้ำหล่อเย็นและหารอยรั่ว'];
+    warning='ห้ามเปิดฝาหม้อน้ำขณะร้อน';
+  } else if(/สตาร์ตไม่ติด|สตาร์ทไม่ติด|start/i.test(symptom)||category==='สตาร์ต'){
+    causes=['แบตเตอรี่อ่อนหรือขั้วแบตเตอรี่หลวม','วงจรสตาร์ตหรือมอเตอร์สตาร์ตมีปัญหา'];
+    steps=['สังเกตว่าไฟหน้าปัดติดหรือไม่','สังเกตว่าได้ยินเสียงคลิกหรือไม่','ให้ช่างตรวจแบตเตอรี่ ฟิวส์ และระบบสตาร์ต'];
+  } else if(/แอร์ไม่เย็น|แอร์|a\/c/i.test(symptom)||category==='แอร์'){
+    causes=['ระบบปรับอากาศอาจมีปัญหา เช่น พัดลม คอมเพรสเซอร์ หรือสารทำความเย็น'];
+    steps=['สังเกตว่าพัดลมในห้องโดยสารทำงานหรือไม่','สังเกตเสียงผิดปกติ','ให้ช่างตรวจระบบปรับอากาศ'];
+  } else if(/เสียง|ดัง|สั่น|vibration|noise/i.test(symptom)||category==='ช่วงล่าง'){
+    causes=['อาจมีชิ้นส่วนหลวม สึกหรอ หรือยาง/ลูกปืนมีปัญหา'];
+    steps=['สังเกตว่าเกิดเสียงตอนเบรก เลี้ยว หรือผ่านทางขรุขระ','หลีกเลี่ยงการขับหากควบคุมรถผิดปกติ','ให้ช่างตรวจช่วงล่างและจุดที่เกิดเสียง'];
+  } else if(code==='P0300'||/^P030[1-4]$/.test(code)){
+    causes=['ตรวจพบรหัสที่เกี่ยวข้องกับการเผาไหม้สะดุด (Misfire)','สาเหตุอาจเกี่ยวกับหัวเทียน คอยล์ ระบบเชื้อเพลิง หรือกำลังอัด'];
+    steps=['อ่านรหัสและข้อมูล Freeze Frame ด้วยเครื่องสแกน','ตรวจหัวเทียนและคอยล์ตามขั้นตอนผู้ผลิต','ตรวจระบบเชื้อเพลิงและกำลังอัดเมื่อจำเป็น'];
+    warning='หากเครื่องสั่นรุนแรงหรือไฟ Check Engine กะพริบ ควรหยุดขับและให้ช่างตรวจ';
+  } else if(code==='P0420'){
+    causes=['ประสิทธิภาพระบบแคทาลิติกคอนเวอร์เตอร์ต่ำกว่าค่าที่กำหนด'];
+    steps=['ตรวจรหัสอื่นและข้อมูลเซนเซอร์ออกซิเจน','ตรวจหารอยรั่วไอเสีย','อย่าเปลี่ยนแคทาลิติกคอนเวอร์เตอร์ก่อนตรวจยืนยัน'];
+  } else if(category==='ไฟฟ้า'){
+    causes=['อาจเกี่ยวข้องกับแบตเตอรี่ ฟิวส์ สายไฟ หรือระบบชาร์จ'];
+    steps=['ตรวจดูไฟเตือนบนหน้าปัด','ตรวจขั้วแบตเตอรี่ด้วยวิธีที่ปลอดภัย','ให้ช่างวัดแรงดันแบตเตอรี่และระบบชาร์จ'];
+  } else if(category==='เกียร์'){
+    causes=['ระบบเกียร์หรือระบบควบคุมเกียร์อาจมีความผิดปกติ'];
+    steps=['สังเกตอาการกระตุก เสียง หรือไฟเตือน','หลีกเลี่ยงการขับต่อหากรถไม่สามารถเคลื่อนที่ได้อย่างปลอดภัย','ให้ช่างตรวจรหัสและของเหลวตามข้อกำหนดผู้ผลิต'];
+  } else {
+    causes=['ข้อมูลปัจจุบันยังไม่พอที่จะระบุสาเหตุอย่างน่าเชื่อถือ','ต้องพิจารณาอาการจริง รหัสเสีย และข้อมูลรถร่วมกัน'];
+    steps=['สังเกตว่าเกิดอาการตอนไหน','บันทึกไฟเตือนและเสียงที่พบ','อ่านรหัส OBD2 และให้ช่างตรวจจุดที่เกี่ยวข้อง'];
+  }
+
+  if(code && !['P0300','P0301','P0302','P0303','P0304','P0420'].includes(code)){
+    causes.unshift('มีรหัส OBD2 '+code+' ควรตรวจคำอธิบายรหัสจากฐานข้อมูลที่ตรงกับรถรุ่นนี้');
+  }
+
+  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  document.getElementById('resultContent').innerHTML=
+    '<div class="resultbox">'+
+    '<div class="severity">ผลประเมินเบื้องต้น · ต้องตรวจยืนยัน</div>'+
+    '<p><b>ประเทศ:</b> '+esc(country)+'<br><b>รถ:</b> '+esc(brand)+' '+esc(model)+
+    '<br><b>ปี:</b> '+esc(year)+'<br><b>เลขไมล์:</b> '+esc(mileage)+
+    '<br><b>ระบบ:</b> '+esc(category)+'<br><b>รหัส OBD2:</b> '+esc(code||'ไม่ได้ระบุ')+
+    '<br><b>อาการ:</b> '+esc(symptom||'ไม่ได้ระบุ')+'</p>'+
+    '<h3>สาเหตุที่ควรพิจารณา</h3><ol>'+causes.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'+
+    '<h3>ขั้นตอนตรวจสอบที่แนะนำ</h3><ol>'+steps.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ol>'+
+    '<p><b>คำเตือน:</b> '+esc(warning)+'</p>'+
+    '<p class="note">นี่คือระบบกฎพื้นฐาน ไม่ใช่การวิเคราะห์ด้วย AI และไม่ใช่การยืนยันว่าอะไหล่เสีย</p>'+
+    '</div>';
+  showPage('results');
 }
 </script>
 </body>
