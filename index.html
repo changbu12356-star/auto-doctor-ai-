@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auto Doctor AI</title>
+<style>
+body{font-family:Arial,sans-serif;background:#eef2f7;margin:0;padding:18px;color:#172033}
+main{max-width:600px;margin:15px auto;background:white;padding:20px;border-radius:15px}
+h1{color:#087e8b}
+label{display:block;margin-top:14px}
+input,select,textarea,button{box-sizing:border-box;width:100%;padding:12px;margin-top:6px;border-radius:8px;border:1px solid #cbd5e1;font-size:16px}
+button{background:#087e8b;color:white;border:0;margin-top:20px}
+#result{white-space:pre-wrap;background:#ecfeff;padding:14px;border-radius:8px;margin-top:18px}
+</style>
+</head>
+<body>
+<main>
+<h1>🔧 Auto Doctor AI</h1>
+<p>ระบบช่วยวิเคราะห์ปัญหารถยนต์เบื้องต้น</p>
+<label>ประเทศ</label>
+<select id="country"><option>ประเทศไทย</option><option>ญี่ปุ่น</option></select>
+<label>ยี่ห้อรถ</label>
+<input id="brand" placeholder="เช่น Toyota, Honda">
+<label>รุ่นรถ</label>
+<input id="model" placeholder="เช่น Yaris, Aqua">
+<label>ปีรถ</label>
+<input id="year" type="number" placeholder="เช่น 2020">
+<label>อาการรถ</label>
+<textarea id="symptom" rows="4" placeholder="เช่น สตาร์ตไม่ติด มีเสียงคลิก"></textarea>
+<label>รหัสเสีย OBD2 (ถ้ามี)</label>
+<input id="code" placeholder="เช่น P0300">
+<button onclick="analyze()">วิเคราะห์ปัญหา</button>
+<div id="result" hidden></div>
+</main>
+<script>
+function analyze(){
+const s=document.getElementById('symptom').value.trim();
+const c=document.getElementById('code').value.trim().toUpperCase();
+const r=document.getElementById('result');
+r.hidden=false;
+if(!s&&!c){r.textContent='กรุณากรอกอาการรถหรือรหัส OBD2 ก่อน';return;}
+let a='ข้อมูลยังไม่เพียงพอ กรุณาระบุอาการเพิ่มเติมและให้ช่างตรวจสอบ';
+if(/สตาร์ตไม่ติด|สตาร์ทไม่ติด|start/i.test(s))
+a='ควรตรวจแบตเตอรี่ ขั้วแบตเตอรี่ ฟิวส์ วงจรสตาร์ต และมอเตอร์สตาร์ต';
+else if(/ร้อน|ความร้อน|overheat/i.test(s))
+a='จอดในที่ปลอดภัยและหยุดเครื่องเมื่อเหมาะสม ห้ามเปิดฝาหม้อน้ำขณะร้อน ให้ช่างตรวจระบบหล่อเย็น';
+else if(/เบรก|brake/i.test(s))
+a='หากเบรกผิดปกติ ห้ามขับต่อ ให้ช่างตรวจระบบเบรก';
+else if(/เสียง|ดัง|noise/i.test(s))
+a='ระบุตำแหน่งเสียงและช่วงเวลาที่เกิด แล้วให้ช่างตรวจชิ้นส่วนที่เกี่ยวข้อง';
+r.textContent='ผลวิเคราะห์เบื้องต้น\nประเทศ: '+document.getElementById('country').value+
+'\nรถ: '+(document.getElementById('brand').value||'ไม่ระบุ')+' '+(document.getElementById('model').value||'')+
+'\nปี: '+(document.getElementById('year').value||'ไม่ระบุ')+
+'\nรหัส OBD2: '+(c||'ไม่มี')+'\n\nคำแนะนำ:\n'+a+
+'\n\nหมายเหตุ: ระบบพื้นฐานนี้ไม่ใช่ AI จริง และไม่สามารถยืนยันสาเหตุเสียได้';
+}
+</script>
+</body>
+</html>
